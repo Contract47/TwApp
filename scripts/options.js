@@ -6,7 +6,12 @@ $("#addButton").click(function(){ addFilter(); });
 function addFilter(){
   // Add new filter line
   var filter = 
-  $('<tr><td><input class="filter"></input></td>  <td><input type="checkbox" class="user"></input></td>  <td><input type="checkbox" class="content"></input></td><td><button class="removeButton">-</button></td></tr>').
+  $('<tr>'+
+    '<td><input class="filter"></input></td>'+
+    '<td><input type="checkbox" class="user"></input></td>'+
+    '<td><input type="checkbox" class="content"></input></td>'+
+    '<td><input class="reply"></input></td>'+
+    '<td><button class="removeButton">-</button></td></tr>').
   appendTo("#filterTab");
   
   // Add remove-event
@@ -30,7 +35,8 @@ function getFilters(){
     var filter = {
       filter:   cells[0].childNodes[0].value,
       user:     cells[1].childNodes[0].checked,
-      content:  cells[2].childNodes[0].checked
+      content:  cells[2].childNodes[0].checked,
+      reply:    cells[3].childNodes[0].value
     };
     
     filters.push(filter);
@@ -40,7 +46,7 @@ function getFilters(){
 }
 
 function save(){
-  chrome.storage.sync.set({filters:getFilters()});
+  chrome.storage.sync.set({filters:getFilters(),changed:true});
 }
 
 function load(){
@@ -50,6 +56,7 @@ function load(){
       filterLine.find('.filter').val(filterObj.filter);
       filterLine.find('.user').prop('checked',filterObj.user);
       filterLine.find('.content').prop('checked',filterObj.content);
+      filterLine.find('.reply').val(filterObj.reply);
     });
   });
 }
