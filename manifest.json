@@ -1,0 +1,26 @@
+{
+  "manifest_version": 2,
+  "name": "TwitchApp",
+  "short_name": "TwitchApp",
+  "description": "Twitch Chat App for content and user filtering",
+  "version": "0.0.1",
+  "minimum_chrome_version": "38",
+
+  "options_page": "options.html",
+  
+  "browser_action": {
+    "default_icon": "assets/icon_128.png"
+  },
+  
+  "content_scripts": [ {
+    "js":   ["libs/jquery.min.js","scripts/background.js"], 
+	  "css":  [ "styles.css" ],
+    "matches": [ "http://*/*", "https://*/*"]
+  }],
+  
+  "permissions": [
+    "storage",
+    "http://*/*", 
+    "https://*/*"
+  ]
+}
