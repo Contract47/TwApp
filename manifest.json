@@ -13,13 +13,19 @@
   },
   
   "content_scripts": [ {
-    "js":   ["libs/jquery.min.js","scripts/background.js"], 
+    "js":   ["libs/jquery.min.js","libs/canvasjs.min.js","scripts/main.js"], 
 	  "css":  [ "styles.css" ],
     "matches": [ "http://*/*", "https://*/*"]
   }],
   
+  "background": {"persistent": false, "scripts": ["scripts/background.js"]},
+  
+  "default_locale": "en",
+  
   "permissions": [
     "storage",
+    "contextMenus",
+    "tabs",
     "http://*/*", 
     "https://*/*"
   ]

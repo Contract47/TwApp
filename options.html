@@ -1,13 +1,17 @@
 <header>
+  <script src="libs/jquery.min.js"></script>
 </header>
 <body>
   <h3>Filters</h3>
-  <table id="filterTab">
-    <tr><th>Filter</th><th>User</th><th>Content</th><th>Auto-Reply</th></tr>
-  </table>
+  <table id="filterTab"></table>
   <button id="addButton">+</button>
+  <br/><br/>
+  
+  <h3>Voting</h3>
+  <label>Filter text</label><input id="votingFilter" value="!cd"></input>
+  <input id="filterActive" type="checkbox"></input><label>active</label>
+  <br/><br/><br/>
   <button id="saveButton">Save</button>
   
-  <script src="libs/jquery.min.js"></script>
   <script src="scripts/options.js"></script>
 </body>

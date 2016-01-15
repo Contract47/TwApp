@@ -1,91 +1,54 @@
-/*eslint-env webextensions, node, jquery*/
-var _filtersChanged = false;
-
-function filter(){
+chrome.contextMenus.onClicked.addListener(function(info, tab) {
   
-  var lines = getLines();
+  var user, content;
   
-  // No new lines => no filter sync required
-  if(lines.length > 0){
-    chrome.storage.sync.get({filters:[],changed:false},function(data){
-      
-      // Filters were modified => reset change flag
-      if(_filtersChanged === true){
-        _filtersChanged = data.changed;
-        chrome.storage.sync.set({changed:false});
-      }
-      
-      console.log(_filtersChanged);
-      // Loop over new lines
-      lines.forEach(function(line){
-      
-        // If no filters were set => just show previous content
-        if(data.filters.length === 0){
-          $(line.element).show();
-        
-        // Otherwise loop over filters
-        }else{
-          var removed = false;
-          
-          data.filters.forEach(function(filterObj){
-            
-            // Filter for content or name matches: hide line
-            if( filterObj.content && line.post.text.indexOf(filterObj.filter) != -1 ||
-                filterObj.user    && line.user.text == filterObj.filter){
-                  
-                  // Auto-Reply to a post, but only if it has not been filtered already
-                  if(filterObj.reply && $(line.element).attr('filtered') !== "true"){
-                    console.log(filterObj.reply);
-                  }else{
-                    $(line.element).hide();
-                    removed = true;
-                  }
-            }
-            
-            $(line.element).attr('filtered',true);
-          });
-          
-          // Line is not shown but was not removed => show it again
-          if(!$(line.element).is(":visible") && !removed){
-            $(line.element).show();
-          }
-        }
-      });
-    });
+  switch(info.menuItemId){
+    case 'addUserFilter':     user    = true; break;
+    case 'addContentFilter':  content = true; break;
+    case 'addFullFilter':     user    = true; 
+                              content = true; break;
   }
   
-  // Check if filters changed
-  chrome.storage.sync.get({changed:false},function(data){ _filtersChanged = data.changed; });
+  var filter = {
+    filter:   info.selectionText,
+    user:     user,
+    content:  content,
+    hide:     true,
+    reply:    ''
+  };
   
-  // Check again in a few
-  setTimeout(function(){filter();},500);
-}
-
-function getLines(){
-  
-  var lines = [];
-  
-  // Get all lines again if filters changed, otherwise skip those already checked
-  var lineSelector = ".line" + ((_filtersChanged)? "":"[filtered!=true]");
-  
-  $(lineSelector).each(function(i,line){
+  chrome.storage.sync.get({filters:[]},function(data){
+    var filters = data.filters;
+    filters.push(filter);
     
-    var lineObj = {};
-    
-    lineObj.element       = line;
-    
-    lineObj.user          = {};
-    lineObj.user.element  = $(line).find('.user')[0];
-    lineObj.user.text     = lineObj.user.element.innerHTML;
-    
-    lineObj.post          = {};
-    lineObj.post.element  = $(line).find('.text')[0];
-    lineObj.post.text     = lineObj.post.element.innerHTML;
-    
-    lines.push(lineObj);
+    chrome.storage.sync.set({filters: filters,changed:true});
   });
   
-  return lines;
-}
+});
 
-filter();
+chrome.contextMenus.create({
+  id: 'addFilter',
+  title: chrome.i18n.getMessage('addFilterTitle'),
+  contexts: ['selection']
+});
+
+chrome.contextMenus.create({
+  id: 'addUserFilter',
+  parentId: 'addFilter',
+  title: chrome.i18n.getMessage('addUserFilterTitle'),
+  contexts: ['selection']
+});
+
+chrome.contextMenus.create({
+  id: 'addContentFilter',
+  parentId: 'addFilter',
+  title: chrome.i18n.getMessage('addContentFilterTitle'),
+  contexts: ['selection']
+});
+
+chrome.contextMenus.create({
+  id: 'addFullFilter',
+  parentId: 'addFilter',
+  title: chrome.i18n.getMessage('addFullFilterTitle'),
+  contexts: ['selection']
+});

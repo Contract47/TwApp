@@ -1,0 +1,21 @@
+{
+  "addFilterTitle": {
+   "message": "Add filter!",
+   "description": "context menu button text"
+  },
+
+  "addUserFilterTitle": {
+   "message": "User",
+   "description": "context menu button text"
+  },
+  
+  "addContentFilterTitle": {
+   "message": "Content",
+   "description": "context menu button text"
+  },
+  
+  "addFullFilterTitle": {
+   "message": "Both",
+   "description": "context menu button text"
+  }
+}

@@ -3,14 +3,33 @@ $(".removeButton").click(function(event){ removeFilter(event); });
 
 $("#addButton").click(function(){ addFilter(); });
 
+const FILTER_STRUCT = [
+  {field:"filter",  tag:"input",content:"value"},
+  {field:"user",    tag:"input",content:"checked",type:"checkbox"},
+  {field:"content", tag:"input",content:"checked",type:"checkbox"},
+  {field:"hide",    tag:"input",content:"checked",type:"checkbox"},
+  {field:"collect", tag:"input",content:"checked",type:"checkbox"},
+  {field:"reply",   tag:"input",content:"value"}
+];
+
+var row = $('#filterTab')[0].insertRow();
+
+FILTER_STRUCT.forEach(function (filter){
+  var cell = document.createElement("th");
+  cell.innerHTML = filter.field;
+  row.appendChild(cell);
+});
+
 function addFilter(){
+  var filterStr = '<tr>';
+  
+  FILTER_STRUCT.forEach(function(filter){
+    filterStr += '<td><'+filter.tag+((filter.type)? ' type="'+filter.type+'"':'')+' class="'+filter.field+'"></'+filter.tag+'></td>';
+  });
+  
   // Add new filter line
   var filter = 
-  $('<tr>'+
-    '<td><input class="filter"></input></td>'+
-    '<td><input type="checkbox" class="user"></input></td>'+
-    '<td><input type="checkbox" class="content"></input></td>'+
-    '<td><input class="reply"></input></td>'+
+  $(filterStr+
     '<td><button class="removeButton">-</button></td></tr>').
   appendTo("#filterTab");
   
@@ -32,32 +51,34 @@ function getFilters(){
     
     var cells   = child.cells;
     
-    var filter = {
-      filter:   cells[0].childNodes[0].value,
-      user:     cells[1].childNodes[0].checked,
-      content:  cells[2].childNodes[0].checked,
-      reply:    cells[3].childNodes[0].value
-    };
+    var filter = {};
+    
+    for(var j=0; j<FILTER_STRUCT.length; j++){
+      filter[FILTER_STRUCT[j].field] = cells[j].childNodes[0][FILTER_STRUCT[j].content];
+    }
     
     filters.push(filter);
   });
-  
+  console.log(filters);
   return filters;
 }
 
 function save(){
-  chrome.storage.sync.set({filters:getFilters(),changed:true});
+  chrome.storage.sync.set({filters:getFilters(),voting:{filter:$("#votingFilter")[0].value,active:$("#filterActive")[0].checked},changed:true});
 }
 
 function load(){
-  chrome.storage.sync.get({filters:getFilters()},function(data){
+  chrome.storage.sync.get({filters:getFilters(),voting:"!cd"},function(data){
     data.filters.forEach(function(filterObj){
       var filterLine = addFilter();
-      filterLine.find('.filter').val(filterObj.filter);
-      filterLine.find('.user').prop('checked',filterObj.user);
-      filterLine.find('.content').prop('checked',filterObj.content);
-      filterLine.find('.reply').val(filterObj.reply);
+      
+      FILTER_STRUCT.forEach(function(filter){
+        filterLine.find('.'+filter.field)[0][filter.content] = filterObj[filter.field];
+      });
     });
+    
+    $("#votingFilter")[0].value   = data.voting.filter;
+    $("#filterActive")[0].checked = data.voting.active;
   });
 }
 
