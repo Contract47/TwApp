@@ -15,7 +15,8 @@
   "content_scripts": [ {
     "js":   ["libs/jquery.min.js","libs/canvasjs.min.js","scripts/main.js"], 
 	  "css":  [ "styles.css" ],
-    "matches": [ "http://*/*", "https://*/*"]
+    "matches": [ "http://*/*", "https://*/*"],
+    "all_frames": true
   }],
   
   "background": {"persistent": false, "scripts": ["scripts/background.js"]},
