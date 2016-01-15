@@ -91,10 +91,9 @@ function filter(){
             }
           });
           
-          var votingFilter  = data.voting.filter.toLowerCase();
-          
-          if(data.voting.active && !votingUsers[line.user.text] && line.post.text && line.post.text.toLowerCase().indexOf(votingFilter) != -1 ){
+          if(data.voting && data.voting.active && !votingUsers[line.user.text] && line.post.text && line.post.text.toLowerCase().indexOf(votingFilter) != -1 ){
             
+            var votingFilter  = data.voting.filter.toLowerCase();
             var lineText = line.post.text.toLowerCase().replace(votingFilter,'').replace(/\s/g, '');
             
             if(!votingData[lineText]){ votingData[lineText] = 0; }
